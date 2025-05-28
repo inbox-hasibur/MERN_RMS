@@ -46,7 +46,7 @@ const Orders = () => {
                   }
                 })}
               </p>
-              <p>${order.amount}.00</p>
+              <p>BDT {order.amount}.00</p>
               <p>Items: {order.items.lenght}</p>
               <p style={{ display: "flex", gap: "4px", alignItems: "center" }}>
                 <span>&#x25cf;</span>

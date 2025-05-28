@@ -62,7 +62,7 @@ const List = () => {
               <img src={`${API_BASE}/images/${item.image}`} alt={item.name} />
               <p>{item.name}</p>
               <p>{item.category}</p>
-              <p>${item.price}</p>
+              <p>BDT {item.price}</p>
               <button
                 onClick={() => removeFood(item._id)}
                 className="delete-button"
