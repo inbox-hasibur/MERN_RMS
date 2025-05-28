@@ -47,7 +47,9 @@ const StoreContextProvider = (props) => {
 
   const loadCartData = async () => {
     const response = await api.get("/api/cart/get");
-    setCartItems(response.data.cartData);
+    if (response.data.cartData) {
+      setCartItems(response.data.cartData);
+    }
   };
 
   useEffect(() => {
