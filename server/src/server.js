@@ -1,13 +1,13 @@
-import express from "express";
 import cors from "cors";
 import dotenv from "dotenv"; //
+import "dotenv/config";
+import express from "express";
 import { connectDB } from "./config/db.js";
 import User from "./models/userModel.js"; //
-import foodRouter from "./routes/foodRoute.js";
-import userRouter from "./routes/userRoute.js";
-import "dotenv/config";
 import cartRouter from "./routes/cartRoute.js";
+import foodRouter from "./routes/foodRoute.js";
 import orderRouter from "./routes/orderRoute.js";
+import userRouter from "./routes/userRoute.js";
 
 dotenv.config();
 const app = express();
@@ -20,25 +20,25 @@ app.use(cors());
 // });
 
 app.post("/api/users/register", async (req, res) => {
-  try {
-    const { name, email, password } = req.body;
-    const existingUser = await User.findOne({ email });
-    if (existingUser) {
-      return res.status(400).json({ message: "User already exists" });
+    try {
+        const { name, email, password } = req.body;
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ message: "User already exists" });
+        }
+        const newUser = new User({ name, email, password });
+        await newUser.save();
+        res.status(201).json({
+            message: "User registered",
+            user: newUser,
+        });
+    } catch (error) {
+        console.error("Server error:", error);
+        res.status(500).json({
+            message: "Error registering user",
+            error: error.message,
+        });
     }
-    const newUser = new User({ name, email, password });
-    await newUser.save();
-    res.status(201).json({
-      message: "User registered",
-      user: newUser,
-    });
-  } catch (error) {
-    console.error("Server error:", error);
-    res.status(500).json({
-      message: "Error registering user",
-      error: error.message,
-    });
-  }
 });
 
 // API Endpoints
@@ -54,7 +54,10 @@ app.use("/api/orders", orderRouter);
 //     });
 // });
 
-app.listen(4000, () => {
-  connectDB();
-  console.log("Server running at http://localhost:3000/");
+app.listen(process.env.PORT || 3000, () => {
+    connectDB();
+    
+    console.log(
+        `Server running at http://localhost:${process.env.PORT || 3000}/`
+    );
 });
