@@ -1,4 +1,4 @@
-import orderModel from "../models/orderModel";
+import orderModel from "../models/orderModel.js";
 import userModel from "../models/userModel.js";
 import Stripe from "stripe";
 
@@ -7,17 +7,17 @@ const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 // Placing user order from frontend
 const placeOrder = async (req, res) => {
     
-    const frontendUrl = "http://localhost:5173";
+    const frontend_url = "http://localhost:5173";
 
     try{
         const newOrder = new orderModel({
-            userId:req.body.userId,
+            userId:req.userId,
             items:req.body.items,
             amount:req.body.amount,
             address:req.body.address,
         })
         await newOrder.save()
-        await userModel.findByIdAndUpdate(req.body.userId,{cartData:{}})
+        await userModel.findByIdAndUpdate(req.userId,{cartData:{}})
 
         const line_items = req.body.items.map((item) => ({
             price_data: {
@@ -76,7 +76,7 @@ const verifyOrder = async (req, res) => {
 // User orders for frontend
 const userOrders = async (req, res) => {
     try {
-        const orders = await orderModel.find({userId: req.body.userId})
+        const orders = await orderModel.find({userId: req.userId})
         res.json({success: true, data:orders});
     } catch (error) {
         console.log(error);
