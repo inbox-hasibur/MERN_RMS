@@ -1,12 +1,12 @@
+import Stripe from "stripe";
 import orderModel from "../models/orderModel.js";
 import userModel from "../models/userModel.js";
-import Stripe from "stripe";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY);
 
 // Placing user order from frontend
 const placeOrder = async (req, res) => {
-  const frontend_url = "http://localhost:5173";
+  const frontend_url = process.env.STRIPE_FRONTEND_URL || "http://localhost:5173";
 
   try {
     const newOrder = new orderModel({
@@ -24,7 +24,7 @@ const placeOrder = async (req, res) => {
         product_data: {
           name: item.name,
         },
-        unit_amount: Math.round(item.price * 100 * 122),
+        unit_amount: Math.round(item.price * 100),
       },
       quantity: item.quantity,
     }));
@@ -34,7 +34,7 @@ const placeOrder = async (req, res) => {
         product_data: {
           name: "Delivery Charges",
         },
-        unit_amount: Math.round(0.57 * 100 * 122),
+        unit_amount: Math.round(57 * 100),
       },
       quantity: 1,
     });
@@ -104,4 +104,5 @@ const updateStatus = async (req, res) => {
   }
 };
 
-export { placeOrder, verifyOrder, userOrders, listOrders, updateStatus };
+export { listOrders, placeOrder, updateStatus, userOrders, verifyOrder };
+
