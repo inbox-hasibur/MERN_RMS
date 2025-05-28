@@ -3,9 +3,10 @@ import "./LoginPopup.css";
 import { assets } from "../../assets/assets";
 import { StoreContext } from "../../context/StoreContext";
 import axios from "axios";
+import { API_BASE } from "../../utils/config";
 
 const LoginPopup = ({ setShowLogin }) => {
-  const { url, setToken } = useContext(StoreContext);
+  const { setToken } = useContext(StoreContext);
 
   const [currentState, setCurrentState] = useState("Login");
   const [data, setData] = useState({ name: "", email: "", password: "" });
@@ -18,7 +19,7 @@ const LoginPopup = ({ setShowLogin }) => {
 
   const onLogin = async (event) => {
     event.preventDefault();
-    let newUrl = url;
+    let newUrl = API_BASE;
     if (currentState === "Login") {
       newUrl += "/api/user/login";
     } else {

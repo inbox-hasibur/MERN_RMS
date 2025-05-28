@@ -1,14 +1,13 @@
 import { createContext, useState, useEffect } from "react";
-import { food_list } from "../assets/assets";
+// import { food_list } from "../assets/assets";
 import api from "../utils/api";
 
 export const StoreContext = createContext(null);
 
 const StoreContextProvider = (props) => {
   const [cartItems, setCartItems] = useState({});
-  const url = "http://localhost:4000";
   const [token, setToken] = useState("");
-  const [foodList, setFoodList] = useState(food_list);
+  const [foodList, setFoodList] = useState([]);
 
   const addToCart = async (itemId) => {
     if (!cartItems[itemId]) {
@@ -17,14 +16,14 @@ const StoreContextProvider = (props) => {
       setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] + 1 }));
     }
     if (token) {
-      await api.post("/cart/add", { itemId });
+      await api.post("/api/cart/add", { itemId });
     }
   };
 
   const removeFromCart = async (itemId) => {
     setCartItems((prev) => ({ ...prev, [itemId]: prev[itemId] - 1 }));
     if (token) {
-      await api.post("/cart/remove", { itemId });
+      await api.post("/api/cart/remove", { itemId });
     }
   };
 
@@ -32,20 +31,22 @@ const StoreContextProvider = (props) => {
     let totalAmount = 0;
     for (const item in cartItems) {
       if (cartItems[item] > 0) {
-        let itemInfo = food_list.find((food) => food._id === item);
-        totalAmount += itemInfo.price * cartItems[item];
+        let itemInfo = foodList.find((food) => food._id === item);
+        if (itemInfo) {
+          totalAmount += itemInfo.price * cartItems[item];
+        }
       }
     }
     return totalAmount;
   };
 
   const fetchFoodList = async () => {
-    const response = await api.get("/food/list");
-    setFoodList(response.data.data);
+    const response = await api.get("/api/food/list");
+    setFoodList(response.data.food);
   };
 
   const loadCartData = async () => {
-    const response = await api.post("/cart/get", {});
+    const response = await api.get("/api/cart/get");
     setCartItems(response.data.cartData);
   };
 
@@ -61,13 +62,12 @@ const StoreContextProvider = (props) => {
   }, []);
 
   const contextValue = {
-    food_list,
+    food_list: foodList,
     cartItems,
     setCartItems,
     addToCart,
     removeFromCart,
     getTotalCartAmount,
-    url,
     token,
     setToken,
   };
